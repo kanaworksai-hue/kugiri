@@ -14,7 +14,7 @@
 
 <p><a href="https://github.com/kanaworksai-hue"><img src="docs/brand/kanaworks-mark.png" height="22" alt="" align="absmiddle"></a>&nbsp;<a href="https://github.com/kanaworksai-hue"><b>A KanaWorks_AI project</b></a></p>
 
-[English](README.md) | **简体中文** | [日本語](README.ja.md)
+[日本語](README.md) | [English](README.en.md) | **简体中文**
 
 [快速开始](#-快速开始) · [与其他工具对比](#-与其他工具对比) · [网页界面](#-网页界面web-ui) · [MCP](#-在-ai-agent-中使用mcp) · [修正其他工具的字幕](#-修正其他工具生成的字幕) · [⭐ Star](#-喜欢就点个-star)
 
