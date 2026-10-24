@@ -1,0 +1,16 @@
+{
+  "name": "kugiri",
+  "owner": {
+    "name": "東京AI映像合同会社"
+  },
+  "metadata": {
+    "description": "kugiri: Japanese subtitle timing and line breaking as a Claude Code plugin (MCP server)."
+  },
+  "plugins": [
+    {
+      "name": "kugiri",
+      "source": "./claude-plugin",
+      "description": "Japanese subtitles from Claude Code: align a script to audio, transcribe, and break lines naturally (SRT / VTT / ASS, furigana)."
+    }
+  ]
+}

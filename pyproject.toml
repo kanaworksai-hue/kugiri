@@ -1,0 +1,83 @@
+[project]
+name = "kugiri"
+version = "0.1.0"
+description = "Japanese subtitle timing toolkit: audio/script alignment, natural line breaking, readings and SRT/VTT/ASS export"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.11"
+authors = [{ name = "東京AI映像合同会社" }]
+keywords = ["subtitles", "japanese", "forced-alignment", "line-breaking", "furigana", "srt", "webvtt", "ass", "mcp"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Environment :: Web Environment",
+    "Intended Audience :: End Users/Desktop",
+    "Intended Audience :: Developers",
+    "Natural Language :: Japanese",
+    "Operating System :: MacOS :: MacOS X",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Multimedia :: Sound/Audio :: Speech",
+    "Topic :: Multimedia :: Video",
+    "Topic :: Text Processing :: Linguistic",
+]
+dependencies = [
+    # 全部是 Apache-2.0 / MIT / BSD，不能引入 GPL 依赖（pykakasi 不行）
+    "sudachipy>=0.7",
+    "sudachidict-core>=20261015",
+    "pyopenjtalk-plus>=0.4.1",
+]
+
+[project.optional-dependencies]
+# ASS 振假名定位用真实字体宽度（不装时按全角 1 / 半角 0.5 估算）
+fonts = ["fonttools>=4.50"]
+# kugiri align：omniASR CTC 对齐（模型用纯 PyTorch 实现，不需要 fairseq2）
+align = ["torch>=2.9", "numpy>=2.0"]
+# kugiri align 没有台本时的识别：Qwen3-ASR（Apache-2.0）用 transformers 原生实现（不用 qwen-asr 包，它依赖 GPLv3 的 soynlp）
+asr = ["kugiri[align]", "transformers>=5.15", "huggingface-hub>=1.0"]
+# kugiri web：本地网页界面（Starlette BSD-3 / uvicorn BSD-3 / python-multipart Apache-2.0）
+web = ["kugiri[asr]", "starlette>=0.44", "uvicorn>=0.30", "python-multipart>=0.0.9"]
+# kugiri mcp：给 AI agent 用的 MCP server（官方 Python SDK，MIT）
+mcp = ["kugiri[asr]", "mcp>=2.3"]
+all = ["kugiri[asr,fonts,web,mcp]"]
+
+[project.scripts]
+kugiri = "kugiri.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/kanaworksai-hue/kugiri"
+Repository = "https://github.com/kanaworksai-hue/kugiri"
+Issues = "https://github.com/kanaworksai-hue/kugiri/issues"
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "pytest>=8",
+]
+# 开发时的评测脚本用（不进发布包）
+eval = [
+    "budoux>=0.6",
+    "pillow>=13.0.0",
+    "playwright>=1.64.0",
+    "pysubs2>=1.8.1",
+    "webvtt-py>=0.5.1",
+]
+
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/kugiri"]
+
+# sdist 只带包本体、测试（自编素材）、文档和数据生成脚本；开发用的评测脚本、内部数据、agent 说明不进
+[tool.hatch.build.targets.sdist]
+only-include = ["src/kugiri", "tests", "docs", "tools", "README.md", "LICENSE", "THIRD_PARTY.md", "pyproject.toml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

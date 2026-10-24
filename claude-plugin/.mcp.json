@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "kugiri": {
+      "command": "uvx",
+      "args": [
+        "--python",
+        "3.12",
+        "--from",
+        "kugiri[mcp]",
+        "kugiri",
+        "mcp"
+      ]
+    }
+  }
+}

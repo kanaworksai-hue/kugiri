@@ -1,0 +1,22 @@
+# OS / runtime
+.DS_Store
+Thumbs.db
+.multica/
+.claude/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.ruff_cache/
+
+# 内部评测：素材、标注、结果、模型环境 —— 绝不进 git
+/internal/
+
+# Development-only files
+AGENTS.md
+CLAUDE.md

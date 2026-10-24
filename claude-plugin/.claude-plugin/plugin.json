@@ -1,0 +1,10 @@
+{
+  "name": "kugiri",
+  "version": "0.1.0",
+  "description": "Japanese subtitle timing: script/audio alignment, transcription, natural line breaks, furigana. Runs the kugiri MCP server locally through uvx.",
+  "author": { "name": "東京AI映像合同会社" },
+  "homepage": "https://github.com/kanaworksai-hue/kugiri",
+  "repository": "https://github.com/kanaworksai-hue/kugiri",
+  "license": "MIT",
+  "keywords": ["subtitles", "japanese", "srt", "furigana", "mcp"]
+}

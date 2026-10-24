@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "kugiri-timeline v1",
+  "description": "Japanese subtitle timeline: cues, character/word timings, readings, confidence, furigana. cs/ce are [start, end) character indices into the cue text; times are absolute seconds in the media file.",
+  "type": "object",
+  "required": ["format", "version", "cues"],
+  "properties": {
+    "format": {"const": "kugiri-timeline"},
+    "version": {"const": 1},
+    "language": {"type": "string", "default": "ja"},
+    "fps": {"type": "number", "exclusiveMinimum": 0},
+    "meta": {"type": "object", "description": "Producer info, e.g. alignment model and quality report."},
+    "cues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["start", "end", "text"],
+        "properties": {
+          "start": {"type": "number", "minimum": 0},
+          "end": {"type": "number", "minimum": 0},
+          "text": {"type": "string", "description": "Source text, punctuation not yet rendered."},
+          "lines": {"type": "array", "items": {"type": "string"}, "description": "Line split; concatenation equals text."},
+          "units": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["cs", "ce", "start", "end"],
+              "properties": {
+                "cs": {"type": "integer", "minimum": 0},
+                "ce": {"type": "integer", "minimum": 0},
+                "start": {"type": "number"},
+                "end": {"type": "number"},
+                "reading": {"type": "string", "description": "Katakana reading (読み形)."},
+                "conf": {"type": "number", "minimum": 0, "maximum": 1}
+              },
+              "additionalProperties": false
+            }
+          },
+          "ruby": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["cs", "ce", "text"],
+              "properties": {
+                "cs": {"type": "integer", "minimum": 0},
+                "ce": {"type": "integer", "minimum": 1},
+                "text": {"type": "string", "description": "Hiragana furigana for text[cs:ce]."}
+              },
+              "additionalProperties": false
+            }
+          },
+          "speaker": {"type": ["string", "null"]},
+          "flags": {"type": "array", "items": {"type": "string"},
+                    "description": "Quality flags, e.g. low_confidence (alignment probably wrong here)."}
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

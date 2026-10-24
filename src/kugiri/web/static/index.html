@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>kugiri</title>
+<script>
+  // 外观：auto（跟随系统）/ light / dark，在首帧前设好，免得闪一下
+  (function () {
+    var m = localStorage.getItem("kugiri.theme") || "auto";
+    var dark = m === "dark" || (m === "auto" && matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.dataset.theme = dark ? "dark" : "light";
+  })();
+</script>
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="logo">区</span><b>kugiri</b><span class="sub" data-t="tagline"></span></div>
+  <div class="top-right">
+    <span id="model-pill" class="pill"></span>
+    <button id="btn-new" class="ghost" data-t="new_job" hidden></button>
+    <button id="btn-dict" class="ghost" data-t="dict"></button>
+    <button id="btn-theme" class="ghost"></button>
+    <button id="btn-lang" class="ghost">EN</button>
+  </div>
+</header>
+
+<main>
+  <!-- 1. 新任务 -->
+  <section id="view-new" class="view">
+    <div id="dl-note" class="dl-note" role="status" hidden><span></span><div class="dl-bar"><div></div></div></div>
+    <div class="card new-card">
+      <label id="drop" class="drop" tabindex="0" role="button" data-pick="#media">
+        <input id="media" type="file" accept="video/*,audio/*,.mkv,.m4a,.flac,.wav,.mp3,.ogg,.opus" hidden>
+        <div class="drop-icon">⬆</div>
+        <div class="drop-main" data-t="drop_main"></div>
+        <div class="drop-sub" data-t="drop_sub"></div>
+        <div id="drop-file" class="drop-file"></div>
+      </label>
+
+      <div class="field">
+        <div class="field-head"><span data-t="script"></span><span class="opt" data-t="optional"></span>
+          <label class="link" tabindex="0" role="button" data-pick="#script-file"><input id="script-file" type="file" accept=".txt,text/plain" hidden><span data-t="load_txt"></span></label>
+        </div>
+        <textarea id="script" rows="5" data-tp="script_ph" data-ta="script"></textarea>
+        <label class="check"><input id="speakers" type="checkbox"> <span data-t="speakers"></span></label>
+      </div>
+
+      <div class="grid3">
+        <div class="field">
+          <div class="field-head" data-t="preset"></div>
+          <div class="seg" id="preset-seg"></div>
+        </div>
+        <div class="field">
+          <div class="field-head" data-t="asr_model"></div>
+          <select id="asr-model" data-ta="asr_model"></select>
+          <div class="hint" data-t="asr_hint"></div>
+        </div>
+        <div class="field">
+          <div class="field-head" data-t="ruby"></div>
+          <select id="ruby" data-ta="ruby"></select>
+          <label class="check"><input id="ruby-once" type="checkbox"> <span data-t="ruby_once"></span></label>
+        </div>
+      </div>
+
+      <div class="actions">
+        <span id="upload-msg" class="muted"></span>
+        <button id="btn-start" class="primary" disabled data-t="start"></button>
+      </div>
+    </div>
+
+    <div id="recent" class="recent"></div>
+  </section>
+
+  <!-- 2. 进度 -->
+  <section id="view-progress" class="view" hidden>
+    <div class="card progress-card">
+      <div class="prog-name" id="prog-name"></div>
+      <ol class="steps" id="steps"></ol>
+      <div class="bar"><div id="bar-fill"></div></div>
+      <div class="prog-meta"><span id="prog-label"></span><span id="prog-time"></span></div>
+      <div id="prog-error" class="error" hidden></div>
+      <div class="actions"><span class="spacer"></span><button id="btn-cancel" class="ghost" data-t="cancel" hidden></button></div>
+    </div>
+  </section>
+
+  <!-- 3. 结果 -->
+  <section id="view-result" class="view" hidden>
+    <div class="result">
+      <div class="left">
+        <div class="player" id="player">
+          <video id="video" controls playsinline preload="metadata"></video>
+          <div class="overlay" id="overlay"></div>
+        </div>
+        <div class="toolbar">
+          <div class="seg small" id="preset-seg2"></div>
+          <select id="ruby2" data-ta="ruby"></select>
+          <label class="check"><input id="ruby-once2" type="checkbox"> <span data-t="ruby_once"></span></label>
+          <span class="spacer"></span>
+          <button id="btn-reflow" data-t="reflow"></button>
+          <button id="btn-realign" class="primary" data-t="realign"></button>
+        </div>
+        <div class="downloads">
+          <span class="muted" data-t="download"></span>
+          <a href="#" data-fmt="srt">SRT</a><a href="#" data-fmt="vtt">VTT</a><a href="#" data-fmt="ass">ASS</a><a href="#" data-fmt="json">JSON</a>
+          <a href="#" data-fmt="txt" data-t="script_txt"></a>
+        </div>
+        <div class="card qc">
+          <div class="qc-head"><b data-t="qc"></b><span id="qc-count" class="muted"></span></div>
+          <div id="qc-list"></div>
+        </div>
+      </div>
+      <div class="right card">
+        <div class="tabs">
+          <button class="tab on" data-tab="cues" data-t="tab_cues"></button>
+          <button class="tab" data-tab="script" data-t="tab_script"></button>
+          <span class="spacer"></span>
+          <span id="edit-count" class="muted"></span>
+        </div>
+        <div id="tab-cues" class="cue-list"></div>
+        <div id="tab-script" class="script-pane" hidden>
+          <p class="muted" data-t="script_help"></p>
+          <textarea id="script2" rows="18" data-ta="tab_script"></textarea>
+          <div class="actions">
+            <label class="link" tabindex="0" role="button" data-pick="#script-file2"><input id="script-file2" type="file" accept=".txt,text/plain" hidden><span data-t="load_txt"></span></label>
+            <a href="#" class="link" data-fmt="txt" data-t="download_txt"></a>
+            <span class="spacer"></span>
+            <button id="btn-realign-script" class="primary" data-t="realign_script"></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<dialog id="dict-dlg">
+  <form method="dialog" class="dlg">
+    <h3 data-t="dict"></h3>
+    <p class="muted" data-t="dict_help"></p>
+    <textarea id="dict-text" rows="14" spellcheck="false" data-ta="dict"></textarea>
+    <div class="dict-try"><input id="dict-try" data-tp="dict_try_ph" data-ta="dict_try_ph"><span id="dict-try-out" class="muted"></span></div>
+    <div class="actions"><span id="dict-msg" class="muted"></span><span class="spacer"></span>
+      <button value="cancel" data-t="close"></button><button id="dict-save" class="primary" value="default" data-t="save"></button></div>
+  </form>
+</dialog>
+
+<div id="toast" class="toast" hidden></div>
+<script src="/static/app.js"></script>
+</body>
+</html>
