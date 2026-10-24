@@ -1,20 +1,53 @@
-# kugiri（区切り）
+<div align="center">
 
-**台本と音声から、日本語として自然な区切りの字幕を。ローカルで、ブラウザからも AI エージェントからも。**
+<img src="docs/assets/banner-en.jpg" alt="kugiri: Japanese subtitles that break where Japanese breaks, from any video, with or without a script" width="820">
 
-Japanese subtitles that break where Japanese breaks: from your audio and script, on your own Mac, in the browser or
-through your AI agent. Audio (+ script) in, naturally broken Japanese SRT / VTT / ASS out.
+<p>
+  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-6b4dff?style=flat-square"></a>
+  <img alt="macOS Apple Silicon" src="https://img.shields.io/badge/macOS-Apple_Silicon-111?style=flat-square&logo=apple">
+  <img alt="Python 3.11+" src="https://img.shields.io/badge/python-3.11+-3776ab?style=flat-square&logo=python&logoColor=white">
+  <a href="#-use-it-from-your-ai-agent-mcp"><img alt="MCP server" src="https://img.shields.io/badge/MCP-server-19b8d6?style=flat-square"></a>
+  <a href="#-use-it-from-your-ai-agent-mcp"><img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude_Code-plugin-d97757?style=flat-square"></a>
+  <img alt="Output: SRT, VTT, ASS" src="https://img.shields.io/badge/output-SRT_·_VTT_·_ASS-e5484d?style=flat-square">
+  <a href="https://github.com/kanaworksai-hue/kugiri/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/kanaworksai-hue/kugiri?style=flat-square&logo=github&label=stars&color=f5c518"></a>
+</p>
+
+<p><a href="https://github.com/kanaworksai-hue"><img src="docs/brand/kanaworks-mark.png" height="22" alt="" align="absmiddle"></a>&nbsp;<a href="https://github.com/kanaworksai-hue"><b>A KanaWorks_AI project</b></a></p>
+
+**English** | [简体中文](README.zh-CN.md) | [日本語](README.ja.md)
+
+[Quick start](#-quick-start) · [How it compares](#-how-it-compares) · [Web UI](#-web-ui) · [MCP](#-use-it-from-your-ai-agent-mcp) · [Fix other tools' subtitles](#-fix-subtitles-made-by-other-tools) · [⭐ Star](#-like-it-star-it)
+
+</div>
+
+**動画を入れるだけで、日本語として自然な区切りの字幕を。台本がなくても書き起こしから、台本があれば一文字単位でぴったり。**
+
+**kugiri** (区切り, "where to cut") makes Japanese subtitles from a video or audio file, **with or without a script**.
+No script? It transcribes the speech first (Qwen3-ASR, with punctuation) and you can fix the words afterwards.
+Have a script? It is aligned to the audio character by character. Either way, the lines break where Japanese
+breaks (at phrase boundaries, with numbers kept together with their units), and you get SRT / VTT / ASS (with furigana if you like).
+Everything runs on your own Mac: in the browser, from your AI agent, or on the command line.
+
+## ✨ Highlights
+
+<table>
+<tr>
+<td align="center" width="25%">🎙️<br><b>Script optional</b><br><sub>Transcribes Japanese speech with punctuation, or aligns your script to the audio character by character</sub></td>
+<td align="center" width="25%">✂️<br><b>Natural line breaks</b><br><sub>Breaks at Japanese phrase boundaries with kinsoku rules; numbers stay with their units</sub></td>
+<td align="center" width="25%">🤖<br><b>Web UI + MCP + CLI</b><br><sub>Same engine in the browser, in Claude Code (plugin) and other MCP clients, and in your scripts</sub></td>
+<td align="center" width="25%">🔒<br><b>Local</b><br><sub>Runs on Apple Silicon. Your video is never uploaded; no API key, nothing to pay</sub></td>
+</tr>
+</table>
+
+- **Furigana:** on every kanji word, or only on hard words (outside the 常用漢字表), or for children by school grade.
+- **Fixes other tools' subtitles:** `kugiri reflow` re-breaks SRT / VTT / JSON from Vrew, CapCut, Premiere,
+  DaVinci Resolve, Subtitle Edit, WhisperX or YouTube auto-captions, without any model.
+- **Quality check:** places where the script and the audio disagree are listed with timestamps.
+- **Presets:** YouTube, vertical Shorts / TikTok, Netflix Japanese style.
+
 Status: beta. **This first release supports macOS on Apple Silicon only** (M1 or later, macOS 14+).
 
-[GitHub](https://github.com/kanaworksai-hue/kugiri) · [X @KanaWorks_AI](https://x.com/KanaWorks_AI)
-
-Three ways to use it, all running the same code on your machine (same file in → same subtitles out):
-
-- **Web UI** (`kugiri web`): drop a video, watch the subtitles on top of it, fix the text, re-align, download.
-- **MCP server** (`kugiri mcp`): lets AI agents (Claude Code, Claude Desktop, …) make subtitles for you.
-- **CLI / Python library** (`kugiri align`, `kugiri reflow`, …).
-
-## Quick start
+## 🚀 Quick start
 
 You need [uv](https://docs.astral.sh/uv/getting-started/installation/) (`brew install uv`) and, for anything
 other than WAV, ffmpeg (`brew install ffmpeg`). Then:
@@ -25,14 +58,15 @@ uvx --python 3.12 --from 'kugiri[all]' kugiri web     # opens the Web UI at http
 
 The first start downloads about 1 GB of Python packages (PyTorch) and then the models (1.3 GB for alignment,
 4.1 GB for transcription), so give it a few minutes; the page shows the download progress. After that everything
-runs offline on your Mac. Drop a video, optionally paste the script, and download the subtitles.
+runs offline on your Mac. Drop a video, paste the script if you have one (or leave it empty to transcribe), and
+download the subtitles.
 
-## How it compares
+## 📊 How it compares
 
 Most subtitle tools break Japanese lines by counting characters. kugiri breaks them at Japanese phrase boundaries:
 no 、。」 at the start of a line, no number cut away from its unit, one sentence per cue where possible.
 
-![The same Japanese clip broken into subtitles by WhisperX, Subtitle Edit, clipwright-wrap and kugiri](https://raw.githubusercontent.com/kanaworksai-hue/kugiri/main/docs/compare-line-breaks.png)
+![The same Japanese clip broken into subtitles by WhisperX, Subtitle Edit, clipwright-wrap and kugiri](docs/compare-line-breaks.png)
 
 *Our own demo clip (synthetic voice), every tool limited to 16 characters × 2 lines, rendered with libass.
 WhisperX 3.8 (large-v3-turbo): `--max_line_width 16 --max_line_count 2`. Subtitle Edit 5.3: its "Split/break long lines" on the
@@ -55,12 +89,11 @@ times). The human cues include a little silence before and after the speech, so 
 reference itself. Subtitle Edit 5 can also align a plain-text script; it times each line's start with a forced
 aligner and sets the end from reading speed, so its line ends are not taken from the audio.
 
-## What it does
+## 🧭 What it does
 
-
-- `kugiri align`: audio + script → character-level timings (omniASR CTC 300M forced alignment, whole file in one
-  pass, no manual splitting) → naturally broken Japanese subtitles. Without a script it transcribes first
-  (Qwen3-ASR, with punctuation) and aligns the transcript the same way.
+- `kugiri align`: audio or video → naturally broken Japanese subtitles. Without a script it transcribes the speech
+  (Qwen3-ASR, with punctuation); with a script it skips that step. Either text is then aligned to the audio
+  character by character (omniASR CTC 300M forced alignment, whole file in one pass, no manual splitting).
 - `kugiri reflow`: model-free line-breaking engine for subtitles that already have timings — including
   subtitles made by other tools (Vrew, CapCut, Premiere, DaVinci Resolve, Subtitle Edit, WhisperX, YouTube).
 - Export SRT / WebVTT / ASS / timeline JSON.
@@ -100,7 +133,7 @@ aligner and sets the end from reading speed, so its line ends are not taken from
   children's and learners' content. `--ruby-once` marks each word only the first time it appears (Netflix style).
 - SRT output replaces `< > { } \` with full-width forms, because most players treat them as markup.
 
-## Install
+## 📦 Install
 
 Needs macOS 14 or later on Apple Silicon and Python 3.11 or later. With [uv](https://docs.astral.sh/uv/) you
 can try it in one line, nothing to set up:
@@ -146,7 +179,7 @@ The models run in plain PyTorch (no fairseq2) on the Apple GPU (MPS; `--device c
 A 16 GB Apple Silicon Mac is enough, also for long recordings. WAV is read directly; other audio/video formats need `ffmpeg` on `PATH` (`brew install ffmpeg`,
 or point `KUGIRI_FFMPEG` at it). Linux, Windows and NVIDIA GPUs (`--device cuda`) are not tested yet.
 
-## Web UI
+## 🌐 Web UI
 
 ```sh
 kugiri web                 # opens http://localhost:7790/ (only this machine can connect)
@@ -170,7 +203,7 @@ user dictionary live in `~/.cache/kugiri/web` (`KUGIRI_HOME` or `--data-dir` to 
 are removed at start-up). The UI is in Japanese and English. The server only answers requests addressed to
 localhost and rejects changes coming from other websites; `--host 0.0.0.0` opens it to your network (no login).
 
-## Use it from your AI agent (MCP)
+## 🤖 Use it from your AI agent (MCP)
 
 `kugiri mcp` is an MCP server (stdio, official Python SDK). Tools:
 
@@ -196,7 +229,7 @@ and the first `uvx` run installs about 1 GB (PyTorch), which takes longer:
 uvx --python 3.12 --from 'kugiri[mcp]' kugiri --version
 ```
 
-The models are downloaded on the first `align` / `transcribe` call (see [Install](#install)); that call simply
+The models are downloaded on the first `align` / `transcribe` call (see [Install](#-install)); that call simply
 takes longer, with progress messages.
 
 **Claude Code** — as a plugin (one step, Claude Code 2.1.275 or later):
@@ -266,7 +299,7 @@ agent's model: a strong model such as Claude Opus reads the sentence boundaries 
 one, which gives about the same result as kugiri's rules alone. Ask, for example:
 "Fix the line breaks of ~/Movies/talk.srt with kugiri, marking the sentence ends yourself."
 
-## Fix subtitles made by other tools
+## 🩹 Fix subtitles made by other tools
 
 Already have Japanese subtitles from another tool? `kugiri reflow` turns them into properly broken Japanese
 subtitles in one command. It does not recognise speech again: it only re-cuts the cues, re-wraps the lines and
@@ -279,7 +312,7 @@ kugiri reflow whisperx-output.json --preset vertical -o shorts.srt   # WhisperX 
 kugiri reflow video.ja.vtt --preset youtube -o fixed.srt            # YouTube auto-captions (yt-dlp --write-auto-subs)
 ```
 
-![WhisperX SRT vs kugiri reflow](https://raw.githubusercontent.com/kanaworksai-hue/kugiri/main/docs/reflow-before-after.png)
+![WhisperX SRT vs kugiri reflow](docs/reflow-before-after.png)
 
 *Our own demo clip (synthetic voice). Left: WhisperX's SRT as it comes out (Japanese gets no line limit by
 default, so this is a single 29-second cue). Right: the same file after `kugiri reflow --preset youtube`.
@@ -304,7 +337,7 @@ inputs for them (`tests/golden/input/`) are written by hand from their documente
 or very short cues without punctuation, trailing spaces, BOM, CRLF). WhisperX and YouTube auto-captions were
 checked with real output. Please open an issue with a sample if a file from your tool comes out wrong.
 
-## Usage
+## ⌨️ Usage
 
 ```sh
 kugiri align talk.wav --script talk.txt -o talk.srt        # one paragraph per line in talk.txt
@@ -359,7 +392,7 @@ furigana). Schema: `src/kugiri/schema/timeline.schema.json`. When the input JSON
 (e.g. from `kugiri align`), segmentation uses those timings instead of interpolating inside cues. `kugiri align`
 also writes `meta.align` (model, device, real-time factor, `warnings`) and per-cue `flags`.
 
-## Development
+## 🛠️ Development
 
 ```sh
 uv sync --all-groups --all-extras
@@ -375,8 +408,24 @@ python-multipart Apache-2.0; MCP: official `mcp` SDK MIT). GPL dependencies are 
 The kanji lists in `src/kugiri/data/` come from the 常用漢字表 (内閣告示, 2010) and the 学年別漢字配当表
 (文部科学省告示, 2017); government notices (告示) are not subject to copyright in Japan (著作権法 第13条).
 `tools/build_kanji.py` regenerates them from the official PDFs. Details and the model licences are in
-[THIRD_PARTY.md](https://github.com/kanaworksai-hue/kugiri/blob/main/THIRD_PARTY.md).
+[THIRD_PARTY.md](THIRD_PARTY.md).
 
-## License
+## ⭐ Like it? Star it
 
-MIT © 東京AI映像合同会社 — [GitHub](https://github.com/kanaworksai-hue/kugiri) · [X @KanaWorks_AI](https://x.com/KanaWorks_AI)
+If kugiri saves you time on Japanese subtitles, a star on GitHub helps other people find it. Bug reports and
+sample files that come out wrong are very welcome in [Issues](https://github.com/kanaworksai-hue/kugiri/issues).
+
+<a href="https://github.com/kanaworksai-hue/kugiri/stargazers"><img alt="Star kugiri on GitHub" src="https://img.shields.io/github/stars/kanaworksai-hue/kugiri?style=social"></a>
+
+## 📄 License and credits
+
+Code and docs: [MIT](LICENSE) © 東京AI映像合同会社. Models and data sources: [THIRD_PARTY.md](THIRD_PARTY.md).
+The KanaWorks_AI name, logo and the character Kana (in `docs/brand/` and in the banners) are not covered by the
+MIT license; see [docs/brand/README.md](docs/brand/README.md).
+
+<div align="center">
+<br>
+<a href="https://github.com/kanaworksai-hue"><img src="docs/brand/kana-wave.png" width="120" alt="Kana, the KanaWorks_AI mascot, waving"></a>
+<br>
+<sub>Made by <a href="https://github.com/kanaworksai-hue"><b>KanaWorks_AI</b></a> · <a href="https://x.com/KanaWorks_AI">X @KanaWorks_AI</a></sub>
+</div>

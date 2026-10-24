@@ -2,7 +2,7 @@
 name = "kugiri"
 version = "0.1.0"
 description = "Japanese subtitle timing toolkit: audio/script alignment, natural line breaking, readings and SRT/VTT/ASS export"
-readme = "README.md"
+dynamic = ["readme"]
 license = "MIT"
 license-files = ["LICENSE"]
 requires-python = ">=3.11"
@@ -69,8 +69,23 @@ eval = [
 ]
 
 [build-system]
-requires = ["hatchling>=1.27"]
+requires = ["hatchling>=1.27", "hatch-fancy-pypi-readme>=24.1"]
 build-backend = "hatchling.build"
+
+# README 里的图片 / 链接在 GitHub 上用相对路径（私有仓库也能看）；PyPI 上没有仓库文件，构建时改成 GitHub 绝对地址
+[tool.hatch.metadata.hooks.fancy-pypi-readme]
+content-type = "text/markdown"
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+path = "README.md"
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.substitutions]]
+pattern = '(src="|\]\()(docs/[^")]+\.(?:png|jpg))'
+replacement = '\1https://raw.githubusercontent.com/kanaworksai-hue/kugiri/main/\2'
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.substitutions]]
+pattern = '(href="|\]\()((?:README[^")]*|LICENSE|THIRD_PARTY\.md|docs/[^")]+\.md))'
+replacement = '\1https://github.com/kanaworksai-hue/kugiri/blob/main/\2'
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/kugiri"]
